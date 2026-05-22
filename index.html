@@ -122,19 +122,29 @@
         .sub-name { font-weight: 600; color: #e2e8f0; font-size: 1rem; word-break: break-word; }
         .sub-type { font-size: 0.7rem; color: #60a5fa; margin-top: 0.2rem; }
         .checkbox-select { width: 20px; height: 20px; cursor: pointer; accent-color: #3b82f6; }
-        .btn-copy {
+        
+        /* Стили для группы кнопок */
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .btn-app {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #e2e8f0;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.8rem;
             border-radius: 2rem;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
             white-space: nowrap;
         }
-        .btn-copy:hover { background: #3b82f6; border-color: #3b82f6; color: white; }
+        .btn-happ:hover { background: #10b981; border-color: #10b981; }
+        .btn-v2ray:hover { background: #f59e0b; border-color: #f59e0b; }
+        .btn-copy:hover { background: #3b82f6; border-color: #3b82f6; }
+        
         .footer {
             text-align: center;
             margin-top: 2rem;
@@ -147,7 +157,7 @@
         @media (max-width: 700px) {
             body { padding: 1rem; }
             .subscription-card { flex-direction: column; align-items: flex-start; }
-            .btn-copy, .checkbox-select { width: 100%; text-align: center; }
+            .button-group { width: 100%; justify-content: flex-start; }
             .controls { flex-direction: column; align-items: stretch; }
         }
     </style>
@@ -168,13 +178,13 @@
     </div>
     <div id="subscriptions-container"></div>
     <div class="footer">
-        ✅ Отметьте нужные подписки → нажмите «Копировать выбранные» → вставьте в приложение.
+        ✅ Выберите подписки → нажмите «Копировать выбранные»<br>
+        📲 Кнопки: Happ | V2Ray | Копировать ссылку
     </div>
 </div>
 
 <script src="subscriptions.js"></script>
 <script>
-    // Теперь храним не URL, а уникальный ID каждой подписки
     let selectedIds = new Set();
     let currentFilter = "";
 
@@ -193,6 +203,32 @@
         return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
     }
 
+    // Открыть в Happ
+    function openInHapp(url) {
+        const happUrl = `happ://sub?url=${encodeURIComponent(url)}`;
+        window.location.href = happUrl;
+        setTimeout(() => {
+            alert("📲 Если Happ не открылся:\n1. Установите Happ из App Store / Google Play\n2. Или скопируйте ссылку вручную");
+        }, 1000);
+    }
+
+    // Открыть в V2RayNG / NekoBox / Clash
+    function openInV2Ray(url) {
+        // Пробуем разные схемы (сработает та, что поддерживается)
+        const schemes = [
+            `v2rayng://install-config?url=${encodeURIComponent(url)}`,
+            `nekobox://install-config?url=${encodeURIComponent(url)}`,
+            `clash://install-config?url=${encodeURIComponent(url)}`
+        ];
+        for (let scheme of schemes) {
+            window.location.href = scheme;
+        }
+        setTimeout(() => {
+            alert("🔄 Если приложение не открылось:\n1. Установите V2RayNG / NekoBox / Clash\n2. Или скопируйте ссылку вручную");
+        }, 1000);
+    }
+
+    // Копировать ссылку в буфер
     async function copyToClipboard(text, button) {
         try {
             await navigator.clipboard.writeText(text);
@@ -204,13 +240,13 @@
         }
     }
 
+    // Копировать все выбранные
     async function copySelectedToClipboard() {
         if (selectedIds.size === 0) {
             alert("❌ Не выбрано ни одной подписки.");
             return;
         }
         
-        // Собираем URL выбранных подписок (с учётом дублей — каждый ID даёт свой URL)
         const selectedUrls = [];
         for (let id of selectedIds) {
             const sub = allSubscriptions.find(s => s.id === id);
@@ -252,6 +288,21 @@
             <div class="stat-card">✅ Выбрано: <span>${selectedIds.size}</span></div>
         `;
 
+        // Навешиваем обработчики на кнопки
+        document.querySelectorAll('.btn-happ').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const url = btn.getAttribute('data-url');
+                openInHapp(url);
+            });
+        });
+        
+        document.querySelectorAll('.btn-v2ray').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const url = btn.getAttribute('data-url');
+                openInV2Ray(url);
+            });
+        });
+        
         document.querySelectorAll('.btn-copy').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const url = btn.getAttribute('data-url');
@@ -281,7 +332,11 @@
                             <div class="sub-name">${escapeHtml(sub.name)}</div>
                             <div class="sub-type">${isWL ? '⚪ White List' : '🟢 VPN серверы'}</div>
                         </div>
-                        <button class="btn-copy" data-url="${escapeAttr(sub.url)}">📋 Копировать</button>
+                        <div class="button-group">
+                            <button class="btn-app btn-happ" data-url="${escapeAttr(sub.url)}">📲 Happ</button>
+                            <button class="btn-app btn-v2ray" data-url="${escapeAttr(sub.url)}">🔄 V2Ray</button>
+                            <button class="btn-app btn-copy" data-url="${escapeAttr(sub.url)}">📋 Копировать</button>
+                        </div>
                     </div>
                 `).join('')}
             </div>
@@ -319,7 +374,6 @@
         }
     }
 
-    // Добавляем уникальный ID каждой подписке при загрузке
     function addUniqueIds() {
         allSubscriptions.forEach((sub, index) => {
             sub.id = `sub_${index}_${Date.now()}_${Math.random()}`;
