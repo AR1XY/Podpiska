@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>VPN Подписка | Доступ к серверам</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 1.5rem;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 2.5rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            margin-bottom: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            color: white;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            border-left: 3px solid #3b82f6;
+            padding-left: 0.75rem;
+        }
+
+        .info-grid {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 1.5rem;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .info-label {
+            color: #64748b;
+        }
+
+        .info-value {
+            color: #e2e8f0;
+            font-family: monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+            text-align: right;
+            max-width: 60%;
+        }
+
+        .btn-primary {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 3rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            margin-bottom: 1rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            filter: brightness(1.05);
+        }
+
+        .btn-secondary {
+            display: block;
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            color: #cbd5e1;
+            text-align: center;
+            padding: 0.85rem;
+            border-radius: 3rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .url-box {
+            background: #0f172a;
+            padding: 0.75rem;
+            border-radius: 1rem;
+            margin: 1.5rem 0 1rem;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #38bdf8;
+            border: 1px solid #1e293b;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+
+        .url-box:active {
+            background: #1e293b;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.7rem;
+            color: #475569;
+        }
+
+        hr {
+            border-color: #334155;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 500px) {
+            .card {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="badge">⚡ ACTIVE SUBSCRIPTION</div>
+    <h1>VPN доступ</h1>
+    <div class="subtitle">
+        Готовый пакет серверов для безопасного интернета
+    </div>
+
+    <div class="info-grid">
+        <div class="info-row">
+            <span class="info-label">🌍 Серверов в подписке</span>
+            <span class="info-value">~160+ узлов</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">📅 Обновление</span>
+            <span class="info-value">Автоматическое (при каждом подключении)</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">🔄 Формат</span>
+            <span class="info-value">VLESS / VMESS (совместим с Happ, Clash, Sing-box)</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">📍 Страны</span>
+            <span class="info-value">🇺🇸🇩🇪🇳🇱🇫🇷🇬🇧🇯🇵🇸🇬 и другие</span>
+        </div>
+    </div>
+
+    <!-- КНОПКА ДОБАВЛЕНИЯ ПОДПИСКИ (ОСНОВНАЯ) -->
+    <a href="https://raw.githubusercontent.com/hiztin/VLESS-PO-GRIBI/main/deploy/subscriptions/22.txt" class="btn-primary" id="subscribeBtn">
+        📱 Добавить подписку в Happ
+    </a>
+
+    <!-- КНОПКА ДЛЯ MANUAL COPY -->
+    <div class="url-box" id="copyUrl">
+        🔗 Нажмите, чтобы скопировать ссылку подписки
+    </div>
+
+    <a href="#" class="btn-secondary" id="manualGuideBtn">
+        ❓ Как добавить подписку вручную
+    </a>
+
+    <hr>
+
+    <div class="footer">
+        Подписка обновляется автоматически. Для Happ: раздел «Подписки» → Добавить → Вставить URL.
+    </div>
+</div>
+
+<script>
+    const SUBSCRIPTION_URL = "https://raw.githubusercontent.com/hiztin/VLESS-PO-GRIBI/main/deploy/subscriptions/22.txt";
+
+    // Копирование ссылки
+    const copyBtn = document.getElementById('copyUrl');
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(SUBSCRIPTION_URL).then(() => {
+            const originalText = copyBtn.innerText;
+            copyBtn.innerText = '✅ Ссылка скопирована!';
+            setTimeout(() => {
+                copyBtn.innerText = originalText;
+            }, 2000);
+        }).catch(() => {
+            alert('Не удалось скопировать. Скопируйте ссылку вручную:\n' + SUBSCRIPTION_URL);
+        });
+    });
+
+    // Инструкция для ручного добавления
+    const guideBtn = document.getElementById('manualGuideBtn');
+    guideBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        alert('📌 Ручное добавление в Happ:\n\n1. Откройте приложение Happ\n2. Перейдите в раздел «Подписки» (Subscriptions)\n3. Нажмите «Добавить» (+)\n4. Выберите «Вставить URL»\n5. Вставьте ссылку:\n' + SUBSCRIPTION_URL + '\n6. Нажмите «Добавить»\n\nПосле импорта подписка появится в списке — выберите сервер и подключитесь.');
+    });
+
+    // Дополнительно: фикс для мобильных, чтобы кнопка корректно работала
+    const subBtn = document.getElementById('subscribeBtn');
+    subBtn.addEventListener('click', (e) => {
+        // Обычная ссылка откроется в браузере. В Happ используется URL-схема, но если Happ установлен,
+        // то произойдёт автоматический импорт (если приложение поддерживает перехват ссылок .txt или raw).
+        // Если нет — ничего страшного, пользователь просто скопирует.
+    });
+</script>
+
+</body>
+</html>
