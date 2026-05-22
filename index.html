@@ -174,7 +174,8 @@
 
 <script src="subscriptions.js"></script>
 <script>
-    let selectedUrls = new Set();
+    // Теперь храним не URL, а уникальный ID каждой подписки
+    let selectedIds = new Set();
     let currentFilter = "";
 
     function escapeHtml(str) {
@@ -204,11 +205,20 @@
     }
 
     async function copySelectedToClipboard() {
-        if (selectedUrls.size === 0) {
+        if (selectedIds.size === 0) {
             alert("❌ Не выбрано ни одной подписки.");
             return;
         }
-        const content = Array.from(selectedUrls).join('\n');
+        
+        // Собираем URL выбранных подписок (с учётом дублей — каждый ID даёт свой URL)
+        const selectedUrls = [];
+        for (let id of selectedIds) {
+            const sub = allSubscriptions.find(s => s.id === id);
+            if (sub) selectedUrls.push(sub.url);
+        }
+        
+        const content = selectedUrls.join('\n');
+        
         try {
             await navigator.clipboard.writeText(content);
             const exportBtn = document.getElementById('exportBtn');
@@ -222,7 +232,7 @@
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
-            alert(`📋 Скопировано ${selectedUrls.size} ссылок`);
+            alert(`📋 Скопировано ${selectedIds.size} ссылок`);
         }
     }
 
@@ -239,7 +249,7 @@
             <div class="stat-card">🟢 Основных: <span>${allSubscriptions.filter(s => s.type === "main").length}</span></div>
             <div class="stat-card">⚪ WhiteList: <span>${allSubscriptions.filter(s => s.type === "wl").length}</span></div>
             <div class="stat-card">🔍 Найдено: <span>${mainSubs.length + wlSubs.length}</span></div>
-            <div class="stat-card">✅ Выбрано: <span>${selectedUrls.size}</span></div>
+            <div class="stat-card">✅ Выбрано: <span>${selectedIds.size}</span></div>
         `;
 
         document.querySelectorAll('.btn-copy').forEach(btn => {
@@ -251,9 +261,9 @@
         
         document.querySelectorAll('.checkbox-select').forEach(cb => {
             cb.addEventListener('change', (e) => {
-                const url = cb.getAttribute('data-url');
-                if (cb.checked) selectedUrls.add(url);
-                else selectedUrls.delete(url);
+                const id = cb.getAttribute('data-id');
+                if (cb.checked) selectedIds.add(id);
+                else selectedIds.delete(id);
                 render();
             });
         });
@@ -266,7 +276,7 @@
                 <div class="category-title">${title} <span style="font-size:0.8rem;">(${subsArray.length})</span></div>
                 ${subsArray.map(sub => `
                     <div class="subscription-card">
-                        <input type="checkbox" class="checkbox-select" data-url="${escapeAttr(sub.url)}" ${selectedUrls.has(sub.url) ? 'checked' : ''}>
+                        <input type="checkbox" class="checkbox-select" data-id="${escapeAttr(sub.id)}" ${selectedIds.has(sub.id) ? 'checked' : ''}>
                         <div class="sub-info">
                             <div class="sub-name">${escapeHtml(sub.name)}</div>
                             <div class="sub-type">${isWL ? '⚪ White List' : '🟢 VPN серверы'}</div>
@@ -280,11 +290,11 @@
 
     function selectAllVisible() {
         const visibleSubs = allSubscriptions.filter(s => s.name.toLowerCase().includes(currentFilter));
-        visibleSubs.forEach(s => selectedUrls.add(s.url));
+        visibleSubs.forEach(s => selectedIds.add(s.id));
         render();
     }
     
-    function clearAll() { selectedUrls.clear(); render(); }
+    function clearAll() { selectedIds.clear(); render(); }
     
     function initTheme() {
         const saved = localStorage.getItem('theme');
@@ -308,6 +318,14 @@
             document.getElementById('themeToggle').textContent = '☀️';
         }
     }
+
+    // Добавляем уникальный ID каждой подписке при загрузке
+    function addUniqueIds() {
+        allSubscriptions.forEach((sub, index) => {
+            sub.id = `sub_${index}_${Date.now()}_${Math.random()}`;
+        });
+    }
+    addUniqueIds();
 
     document.getElementById('searchInput').addEventListener('input', (e) => {
         currentFilter = e.target.value.toLowerCase();
