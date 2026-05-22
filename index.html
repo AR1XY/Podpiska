@@ -192,7 +192,7 @@
     <div id="subscriptions-container"></div>
     <div class="footer">
         ✅ Выберите подписки → «Копировать выбранные»<br>
-        📲 Кнопки: Happ | V2Ray | Копировать ссылку
+        📲 Happ: автоматический импорт всей подписки по ссылке
     </div>
 </div>
 
@@ -216,16 +216,60 @@
         return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
     }
 
-    // Happ — правильная схема
-    function openInHapp(url) {
-        navigator.clipboard.writeText(url).catch(() => {});
+    function showToast(message, isError = false) {
+        let toast = document.getElementById('toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #1e293b;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 40px;
+                font-size: 13px;
+                z-index: 9999;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                border: 1px solid #3b82f6;
+                transition: opacity 0.3s;
+                opacity: 0;
+                pointer-events: none;
+                max-width: 90%;
+                text-align: center;
+                font-weight: 500;
+            `;
+            document.body.appendChild(toast);
+        }
+        if (isError) {
+            toast.style.background = '#7f1a1a';
+            toast.style.borderColor = '#ef4444';
+        } else {
+            toast.style.background = '#1e293b';
+            toast.style.borderColor = '#3b82f6';
+        }
+        toast.textContent = message;
+        toast.style.opacity = '1';
+        setTimeout(() => toast.style.opacity = '0', 3000);
+    }
+
+    // Happ — импорт всей подписки (ссылкой на файл)
+    function openInHapp(url, event) {
         const encodedUrl = encodeURIComponent(url);
-        window.location.href = `happ://import/config?url=${encodedUrl}`;
+        const happLink = `happ://sub?url=${encodedUrl}`;
+        
+        window.location.href = happLink;
+        
+        if (event && event.target) {
+            const originalText = event.target.textContent;
+            event.target.textContent = '✓ Открыто!';
+            setTimeout(() => event.target.textContent = originalText, 1500);
+        }
+        
         setTimeout(() => {
-            window.location.href = `happ://subscription/add?url=${encodedUrl}`;
-        }, 100);
-        setTimeout(() => {
-            alert("📲 Если подписка не добавилась автоматически:\n\n1. Откройте Happ\n2. Подписки → Добавить → Вставить URL\n3. Вставьте ссылку:\n" + url);
+            showToast("📲 Если не импортировалось: Happ → Подписки → Добавить → Вставить URL");
         }, 2000);
     }
 
@@ -238,9 +282,7 @@
             `clash://install-config?url=${encodedUrl}`
         ];
         for (let scheme of schemes) window.location.href = scheme;
-        setTimeout(() => {
-            alert("🔄 Если приложение не открылось:\n1. Установите V2RayNG / NekoBox / Clash\n2. Или скопируйте ссылку вручную");
-        }, 1500);
+        showToast("🔄 Открываем V2RayNG / NekoBox / Clash...");
     }
 
     // Копировать одну ссылку
@@ -249,16 +291,17 @@
             await navigator.clipboard.writeText(text);
             const original = button.textContent;
             button.textContent = '✓ Скопировано';
-            setTimeout(() => button.textContent = original, 2000);
+            setTimeout(() => button.textContent = original, 1500);
+            showToast("📋 Ссылка скопирована!");
         } catch {
-            alert('Не удалось скопировать. Скопируйте вручную:\n' + text);
+            showToast("❌ Не удалось скопировать", true);
         }
     }
 
     // Копировать все выбранные
     async function copySelectedToClipboard() {
         if (selectedIds.size === 0) {
-            alert("❌ Не выбрано ни одной подписки.");
+            showToast("❌ Не выбрано ни одной подписки", true);
             return;
         }
         const selectedUrls = [];
@@ -272,7 +315,8 @@
             const exportBtn = document.getElementById('exportBtn');
             const originalText = exportBtn.textContent;
             exportBtn.textContent = '✓ Скопировано!';
-            setTimeout(() => exportBtn.textContent = originalText, 2000);
+            setTimeout(() => exportBtn.textContent = originalText, 1500);
+            showToast(`📋 Скопировано ${selectedIds.size} ссылок`);
         } catch (err) {
             const textarea = document.createElement('textarea');
             textarea.value = content;
@@ -280,7 +324,7 @@
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
-            alert(`📋 Скопировано ${selectedIds.size} ссылок`);
+            showToast(`📋 Скопировано ${selectedIds.size} ссылок`);
         }
     }
 
@@ -301,7 +345,7 @@
         `;
 
         document.querySelectorAll('.btn-happ').forEach(btn => {
-            btn.addEventListener('click', (e) => openInHapp(btn.getAttribute('data-url')));
+            btn.addEventListener('click', (e) => openInHapp(btn.getAttribute('data-url'), e));
         });
         document.querySelectorAll('.btn-v2ray').forEach(btn => {
             btn.addEventListener('click', (e) => openInV2Ray(btn.getAttribute('data-url')));
