@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>VPN Subscriptions Hub | Белые списки и серверы</title>
+    <title>VPN Subscriptions Hub</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -65,7 +65,6 @@
             font-size: 0.9rem;
             outline: none;
         }
-        .search-box::placeholder { color: #64748b; }
         .btn-action {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -79,20 +78,8 @@
         .btn-action:hover { background: #3b82f6; border-color: #3b82f6; }
         body.light .btn-action { background: rgba(0, 0, 0, 0.05); color: #1e293b; }
         body.light .btn-action:hover { background: #3b82f6; color: white; }
-        .theme-toggle {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.25rem;
-        }
-        .stats {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin: 1rem 0;
-            flex-wrap: wrap;
-        }
+        .theme-toggle { background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0.25rem; }
+        .stats { display: flex; gap: 1rem; justify-content: center; margin: 1rem 0; flex-wrap: wrap; }
         .stat-card {
             background: rgba(30, 41, 59, 0.5);
             backdrop-filter: blur(8px);
@@ -181,8 +168,7 @@
     </div>
     <div id="subscriptions-container"></div>
     <div class="footer">
-        ✅ Отметьте нужные подписки → нажмите «Копировать выбранные» → вставьте в Happ, Clash, Sing-box.<br>
-        WL = White List (белые списки).
+        ✅ Отметьте нужные подписки → нажмите «Копировать выбранные» → вставьте в приложение.
     </div>
 </div>
 
@@ -190,26 +176,6 @@
 <script>
     let selectedUrls = new Set();
     let currentFilter = "";
-    let allSubscriptions = [];
-
-    // Загрузка подписок из внешнего файла
-    async function loadSubscriptions() {
-        try {
-            const response = await fetch('subscriptions.js');
-            const text = await response.text();
-            const match = text.match(/const allSubscriptions = (\[[\s\S]*?\]);/);
-            if (match) {
-                allSubscriptions = eval(match[1]);
-                render();
-            } else {
-                console.error('Не удалось распарсить subscriptions.js');
-                document.getElementById('subscriptions-container').innerHTML = '<div style="color:red; text-align:center;">Ошибка загрузки подписок. Проверьте файл subscriptions.js</div>';
-            }
-        } catch (error) {
-            console.error('Ошибка загрузки:', error);
-            document.getElementById('subscriptions-container').innerHTML = '<div style="color:red; text-align:center;">Файл subscriptions.js не найден. Положите его в ту же папку.</div>';
-        }
-    }
 
     function escapeHtml(str) {
         if (!str) return '';
@@ -237,44 +203,36 @@
         }
     }
 
-    // КОПИРОВАНИЕ ВСЕХ ВЫБРАННЫХ ССЫЛОК В БУФЕР
     async function copySelectedToClipboard() {
         if (selectedUrls.size === 0) {
             alert("❌ Не выбрано ни одной подписки.");
             return;
         }
-        
         const content = Array.from(selectedUrls).join('\n');
-        
         try {
             await navigator.clipboard.writeText(content);
             const exportBtn = document.getElementById('exportBtn');
             const originalText = exportBtn.textContent;
             exportBtn.textContent = '✅ Скопировано!';
-            setTimeout(() => {
-                exportBtn.textContent = originalText;
-            }, 2000);
+            setTimeout(() => exportBtn.textContent = originalText, 2000);
         } catch (err) {
-            // fallback для старых браузеров
             const textarea = document.createElement('textarea');
             textarea.value = content;
             document.body.appendChild(textarea);
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
-            alert(`📋 Скопировано ${selectedUrls.size} ссылок в буфер обмена`);
+            alert(`📋 Скопировано ${selectedUrls.size} ссылок`);
         }
     }
 
     function render() {
-        if (!allSubscriptions.length) return;
-        
         const mainSubs = allSubscriptions.filter(s => s.type === "main" && s.name.toLowerCase().includes(currentFilter));
         const wlSubs = allSubscriptions.filter(s => s.type === "wl" && s.name.toLowerCase().includes(currentFilter));
         
         const container = document.getElementById('subscriptions-container');
-        container.innerHTML = renderCategory('🟢 Основные подписки (VPN серверы)', mainSubs, false) +
-                             renderCategory('⚪ White List (Белые списки / WL)', wlSubs, true);
+        container.innerHTML = renderCategory('🟢 Основные подписки', mainSubs, false) +
+                             renderCategory('⚪ White List (белые списки)', wlSubs, true);
 
         document.getElementById('stats').innerHTML = `
             <div class="stat-card">📦 Всего: <span>${allSubscriptions.length}</span></div>
@@ -326,10 +284,7 @@
         render();
     }
     
-    function clearAll() { 
-        selectedUrls.clear(); 
-        render(); 
-    }
+    function clearAll() { selectedUrls.clear(); render(); }
     
     function initTheme() {
         const saved = localStorage.getItem('theme');
@@ -364,7 +319,7 @@
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
     initTheme();
-    loadSubscriptions();
+    render();
 </script>
 </body>
 </html>
