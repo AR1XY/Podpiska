@@ -1,7 +1,8 @@
 // ============================================================
-// ВСЕ ПОДПИСКИ — добавляйте/удаляйте здесь
+// ВСЕ ПОДПИСКИ (110 штук) — полностью обновлено
 // ============================================================
 const allSubscriptions = [
+    // ГРИБЫ 1-25
     { name: "Гриб #1", url: "https://raw.githubusercontent.com/hiztin/VLESS-PO-GRIBI/main/deploy/subscriptions/1.txt", type: "main" },
     { name: "Гриб #2", url: "https://raw.githubusercontent.com/hiztin/VLESS-PO-GRIBI/main/deploy/subscriptions/2.txt", type: "main" },
     { name: "Гриб #3", url: "https://raw.githubusercontent.com/hiztin/VLESS-PO-GRIBI/main/deploy/subscriptions/3.txt", type: "main" },
@@ -27,6 +28,8 @@ const allSubscriptions = [
     { name: "Гриб #23", url: "https://raw.githubusercontent.com/hiztin/VLESS-PO-GRIBI/main/deploy/subscriptions/23.txt", type: "main" },
     { name: "Гриб #24", url: "https://raw.githubusercontent.com/hiztin/VLESS-PO-GRIBI/main/deploy/subscriptions/24.txt", type: "main" },
     { name: "Гриб #25", url: "https://raw.githubusercontent.com/hiztin/VLESS-PO-GRIBI/main/deploy/subscriptions/25.txt", type: "main" },
+
+    // ОСТАЛЬНЫЕ ПОДПИСКИ (85 штук)
     { name: "LimeVPN", url: "https://raw.githubusercontent.com/LimeHi/LimeVPN/refs/heads/main/LimeVPN.txt?v=1", type: "main" },
     { name: "Mygala VPN", url: "https://raw.githubusercontent.com/btsk161/Freeinternet_byMygalaru.github.io/refs/heads/main/premium.txt", type: "main" },
     { name: "AllVPN", url: "https://sub.fawlok.me/", type: "main" },
